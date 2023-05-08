@@ -3,23 +3,23 @@
 project ("RobotSimulation")
 
 set(public_header
-	"include/SimulationRunner.h")
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/SimulationRunner.h")
 
 set(source_files 
-	"src/InputParser.cpp"
-	"src/StringUtilities.cpp"
-	"src/Robot.cpp"
-	"src/RobotSimulator.cpp"
-	"src/InfDetector.cpp"
-	"src/SimulationRunner.cpp")
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/InputParser.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/StringUtilities.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/Robot.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/RobotSimulator.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/InfDetector.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/SimulationRunner.cpp")
 
 set(header_files
-	"include/RobotSimulator.h"
-	"include/InputParser.h" 
-	"include/Datatypes.h" 
-	"include/StringUtilities.h" 
-	"include/Robot.h"
-	"include/InfDetector.h")
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RobotSimulator.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/InputParser.h" 
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Datatypes.h" 
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/StringUtilities.h" 
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Robot.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/InfDetector.h")
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
@@ -46,17 +46,9 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-set(test_files 
-	"tests/InputParserTest.cpp"
-	"tests/StringUtilitiesTest.cpp"
-	"tests/RobotTest.cpp"
-	"tests/RobotSimulatorTest.cpp"
-	"tests/InfDetectorTest.cpp"
-	"tests/SimulationRunnerTest.cpp")
+enable_testing()
 
-add_executable(tests ${test_files} ${source_files} ${public_header} ${header_files})
-target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
+add_subdirectory(tests)
 
 target_compile_features(RobotSimulator PRIVATE cxx_std_17)
 target_compile_features(SimulationRunnerLib PRIVATE cxx_std_17)
-target_compile_features(tests PRIVATE cxx_std_17)
