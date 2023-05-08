@@ -2,6 +2,7 @@
 #include "StringUtilities.h"
 
 #include <cctype>
+#include <algorithm>
 
 using StrIt = std::string::const_iterator;
 
