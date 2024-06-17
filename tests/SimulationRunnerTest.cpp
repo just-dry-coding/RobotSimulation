@@ -46,9 +46,8 @@ inf)"
 };
 //clang-format on
 
-TEST_CASE("Simulate whole example Input", "[SimulationRunner]")
-{
-	runSimulationRunner(exampleInput, std::cout);
+TEST_CASE("Simulate whole example Input", "[SimulationRunner]") {
+	runSimulation(exampleInput, std::cout);
 
 	REQUIRE(1 == 1);
 }

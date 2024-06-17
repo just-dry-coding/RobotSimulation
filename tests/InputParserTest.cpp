@@ -4,18 +4,10 @@
 
 #include <sstream>
 
-TEST_CASE("Create File Parser", "[InputParser]")
-{
-	auto input_stream = std::istringstream{"0 0 0 0"};
-	auto inputParser = InputParser(input_stream);
 
-	REQUIRE(&inputParser != nullptr);
-}
-
-TEST_CASE("Read input line by line", "[InputParser]")
-{
-	auto line1 = std::string{"1 2 3 4"};
-	auto line2 = std::string{".....#"};
+TEST_CASE("Read input line by line", "[InputParser]") {
+	auto line1 = std::string{ "1 2 3 4" };
+	auto line2 = std::string{ ".....#" };
 	auto input_stream = std::stringstream();
 	input_stream << line1 << '\n' << line2;
 
@@ -25,9 +17,8 @@ TEST_CASE("Read input line by line", "[InputParser]")
 	REQUIRE(lines[1] == line2);
 }
 
-TEST_CASE("Parse first line", "[InputParser]")
-{
-	auto firstLine = std::string{"4 8 4 6"};
+TEST_CASE("Parse first line", "[InputParser]") {
+	auto firstLine = std::string{ "4 8 4 6" };
 
 	auto parsedLine = InputParser::parseFirstLine(firstLine);
 
@@ -37,9 +28,8 @@ TEST_CASE("Parse first line", "[InputParser]")
 	REQUIRE(parsedLine.nPrograms == 6);
 }
 
-TEST_CASE("Parse grid", "[InputParser]")
-{
-	auto gridStrings = std::vector<std::string>{{"...#"}, {"##.#"}, {"..#."}};
+TEST_CASE("Parse grid", "[InputParser]") {
+	auto gridStrings = std::vector<std::string>{ {"...#"}, {"##.#"}, {"..#."} };
 
 	auto grid =
 		InputParser::parseGrid2D(gridStrings.size(), gridStrings[0].size(), std::begin(gridStrings));
@@ -52,10 +42,9 @@ TEST_CASE("Parse grid", "[InputParser]")
 	REQUIRE(grid(4, 5) == GridCellState::b);
 }
 
-TEST_CASE("Parse procedures", "[InputParser]")
-{
+TEST_CASE("Parse procedures", "[InputParser]") {
 	auto procedureStrings =
-		std::vector<std::string>{{"G=ub(B)"}, {"B=ub(m)lib(l)(m)"}, {"H=ib()(mmHllmll)"}, {"I=III"}};
+		std::vector<std::string>{ {"G=ub(B)"}, {"B=ub(m)lib(l)(m)"}, {"H=ib()(mmHllmll)"}, {"I=III"} };
 
 	auto procedures =
 		InputParser::parseProcedures(procedureStrings.size(), std::begin(procedureStrings));
@@ -66,8 +55,7 @@ TEST_CASE("Parse procedures", "[InputParser]")
 	REQUIRE(procedures['I'] == "III");
 }
 
-TEST_CASE("Parse programs", "[InputParser]")
-{
+TEST_CASE("Parse programs", "[InputParser]") {
 	auto programStrings = std::vector<std::string>{
 		{"1 1 w"},
 		{"G"},
@@ -80,17 +68,16 @@ TEST_CASE("Parse programs", "[InputParser]")
 		{"1 1 e"},
 		{"H"},
 		{"2 2 s"},
-		{"I"}};
+		{"I"} };
 
 	auto programs = InputParser::parsePrograms(programStrings.size() / 2, std::begin(programStrings));
 
 	REQUIRE(programs.size() == (programStrings.size() / 2));
 	REQUIRE(programs[0].code == "G");
-	REQUIRE(programs[5].initPose == Pose2D{2, 2, Direction('s')});
+	REQUIRE(programs[5].initPose == Pose2D{ 2, 2, Direction('s') });
 }
 
-TEST_CASE("Parse whole input", "[InputParser]")
-{
+TEST_CASE("Parse whole input", "[InputParser]") {
 	auto programStrings = std::vector<std::string>{
 		{"1 1 w"},
 		{"G"},
@@ -103,17 +90,16 @@ TEST_CASE("Parse whole input", "[InputParser]")
 		{"1 1 e"},
 		{"H"},
 		{"2 2 s"},
-		{"I"}};
+		{"I"} };
 
 	auto programs = InputParser::parsePrograms(programStrings.size() / 2, std::begin(programStrings));
 
 	REQUIRE(programs.size() == (programStrings.size() / 2));
 	REQUIRE(programs[0].code == "G");
-	REQUIRE(programs[5].initPose == Pose2D{2, 2, Direction('s')});
+	REQUIRE(programs[5].initPose == Pose2D{ 2, 2, Direction('s') });
 }
 
-TEST_CASE("Parse combined input", "[InputParser]")
-{
+TEST_CASE("Parse combined input", "[InputParser]") {
 	auto input_stream = std::stringstream{
 		// clang-format off
 R"(1 4 1 1
@@ -127,9 +113,9 @@ G)"
 
 	REQUIRE(inputParser.grid().rows() == 3);
 	REQUIRE(inputParser.grid().cols() == 6);
-	REQUIRE(inputParser.grid()(1,1) == GridCellState::f);
-	REQUIRE(inputParser.grid()(1,2) == GridCellState::b);
+	REQUIRE(inputParser.grid()(1, 1) == GridCellState::f);
+	REQUIRE(inputParser.grid()(1, 2) == GridCellState::b);
 	REQUIRE(inputParser.procedures().at('A') == "ub(B)");
-	REQUIRE(inputParser.programs()[0].initPose == Pose2D{1,1,Direction::w});
+	REQUIRE(inputParser.programs()[0].initPose == Pose2D{ 1,1,Direction::w });
 	REQUIRE(inputParser.programs()[0].code == "G");
 }

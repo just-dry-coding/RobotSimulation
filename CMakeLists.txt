@@ -2,6 +2,8 @@
 
 project ("RobotSimulation")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(public_header
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/SimulationRunner.h")
 

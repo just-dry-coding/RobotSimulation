@@ -5,20 +5,18 @@
 #include <istream>
 #include <iterator>
 
-class InputParser
-{
+class InputParser {
 	Grid2D _grid;
 	Procedures _procedures;
 	Programs _programs;
 
 public:
 
-	struct MetaInfo
-	{
-		unsigned int gridRows;
-		unsigned int gridCols;
-		unsigned int nProcedures;
-		unsigned int nPrograms;
+	struct MetaInfo {
+		unsigned long gridRows;
+		unsigned long gridCols;
+		unsigned long nProcedures;
+		unsigned long nPrograms;
 	};
 
 	using LinesIterator = std::vector<std::string>::const_iterator;

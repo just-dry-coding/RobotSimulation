@@ -1,4 +1,11 @@
 # build dir
-out/
+build/
 # vs settings
-.vs
+.vscode
+_deps/
+*.cmake
+CMakeFiles/
+generated-includes/
+CMakeCache.txt
+DartConfiguration.tcl
+compile_commands.json

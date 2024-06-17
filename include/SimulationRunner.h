@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-namespace Sim
-{
-void runSimulationRunner(std::istream& input, std::ostream& os);
+namespace Sim {
+    void runSimulation(std::istream& input, std::ostream& os);
 }
