@@ -136,6 +136,7 @@ void RobotSimulator::doNextStep(size_t stackIndex) {
 		resolveProcedure(stackEntry);
 	}
 	else {
+		throw std::runtime_error("Invalid command");
 		return;
 	}
 	addInfinityEntry(_stack[stackIndex]);
@@ -158,7 +159,7 @@ void RobotSimulator::popStack() {
 	}
 }
 
-std::variant<Pose2D, RobotSimulator::Inf> RobotSimulator::runStack() {
+Pose2D RobotSimulator::runStack() {
 	while (_stack.size() > 0) {
 		try {
 			doNextStep(_stack.size() - 1);
@@ -172,17 +173,12 @@ std::variant<Pose2D, RobotSimulator::Inf> RobotSimulator::runStack() {
 	return _robot.currentPose();
 }
 
-std::variant<Pose2D, RobotSimulator::Inf> RobotSimulator::runProgram(Program const& program) {
+Pose2D RobotSimulator::runProgram(Program const& program) {
 	_robot.setPose(program.initPose);
 	_stack = Stack{ {program.code, program.initPose} };
 	_infDetector = InfDetector{}; // todo: check if better to initialize simulator for every program
 
-	try {
-		return runStack();
-	}
-	catch (Inf const&) {
-		return Inf{};
-	}
+	return runStack();
 }
 
 RobotSimulator::RobotSimulator(Procedures const& procedures, Grid2D const& grid)

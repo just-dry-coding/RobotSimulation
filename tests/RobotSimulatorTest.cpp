@@ -3,6 +3,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+
 #include <sstream>
 
 // clang-format off
@@ -19,14 +20,12 @@ G)"
 };
 //clang-format on
 
-TEST_CASE("Simulate sheet program 3", "[RobotSimulator]")
-{
+TEST_CASE("Simulate sheet program 3", "[RobotSimulator]") {
 	auto inputParser = InputParser(sheetProgram3);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
 	auto res = simulator.runProgram(inputParser.programs()[0]);
 
-	REQUIRE(std::holds_alternative<Pose2D>(res));
-	REQUIRE(std::get<Pose2D>(res) == Pose2D{1,1,Direction::w});
+	REQUIRE(res == Pose2D{ 1,1,Direction::w });
 }
 
 // clang-format off
@@ -43,14 +42,13 @@ ib(lib()(mmm))(mmmm))"
 };
 //clang-format on
 
-TEST_CASE("Simulate sheet program 4", "[RobotSimulator]")
-{
+TEST_CASE("Simulate sheet program 4", "[RobotSimulator]") {
 	auto inputParser = InputParser(sheetProgram4);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
 	auto res = simulator.runProgram(inputParser.programs()[0]);
 
-	REQUIRE(std::holds_alternative<Pose2D>(res));
-	REQUIRE(std::get<Pose2D>(res) == Pose2D{4,4,Direction::e});
+
+	REQUIRE(res == Pose2D{ 4,4,Direction::e });
 }
 
 // clang-format off
@@ -63,14 +61,13 @@ mlm)"
 };
 //clang-format on
 
-TEST_CASE("Simulate program with minmalProgram", "[RobotSimulator]")
-{
+TEST_CASE("Simulate program with minmalProgram", "[RobotSimulator]") {
 	auto inputParser = InputParser(minimalProgramInput);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
 	auto res = simulator.runProgram(inputParser.programs()[0]);
 
-	REQUIRE(std::holds_alternative<Pose2D>(res));
-	REQUIRE(std::get<Pose2D>(res) == Pose2D{2,1,Direction::s});
+
+	REQUIRE(res == Pose2D{ 2,1,Direction::s });
 }
 
 // clang-format off
@@ -83,14 +80,13 @@ ib(l)(mlm))"
 };
 //clang-format on
 
-TEST_CASE("Simulate program with branching condition true", "[RobotSimulator]")
-{
+TEST_CASE("Simulate program with branching condition true", "[RobotSimulator]") {
 	auto inputParser = InputParser(branchProgramInput);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
 	auto res = simulator.runProgram(inputParser.programs()[0]);
 
-	REQUIRE(std::holds_alternative<Pose2D>(res));
-	REQUIRE(std::get<Pose2D>(res) == Pose2D{1,1,Direction::s});
+
+	REQUIRE(res == Pose2D{ 1,1,Direction::s });
 }
 
 // clang-format off
@@ -103,14 +99,13 @@ ib(l)(mlm))"
 };
 //clang-format on
 
-TEST_CASE("Simulate program with branching condition false", "[RobotSimulator]")
-{
+TEST_CASE("Simulate program with branching condition false", "[RobotSimulator]") {
 	auto inputParser = InputParser(branchSecondProgramInput);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
 	auto res = simulator.runProgram(inputParser.programs()[0]);
 
-	REQUIRE(std::holds_alternative<Pose2D>(res));
-	REQUIRE(std::get<Pose2D>(res) == Pose2D{2,2,Direction::e});
+
+	REQUIRE(res == Pose2D{ 2,2,Direction::e });
 }
 
 // clang-format off
@@ -123,14 +118,13 @@ ub(l))"
 };
 //clang-format on
 
-TEST_CASE("Simulate program with looping", "[RobotSimulator]")
-{
+TEST_CASE("Simulate program with looping", "[RobotSimulator]") {
 	auto inputParser = InputParser(loopProgramInput);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
 	auto res = simulator.runProgram(inputParser.programs()[0]);
 
-	REQUIRE(std::holds_alternative<Pose2D>(res));
-	REQUIRE(std::get<Pose2D>(res) == Pose2D{1,1,Direction::n});
+
+	REQUIRE(res == Pose2D{ 1,1,Direction::n });
 }
 
 // clang-format off
@@ -144,13 +138,10 @@ ub(l))"
 };
 //clang-format on
 
-TEST_CASE("Detect simple infinity", "[RobotSimulator]")
-{
+TEST_CASE("Detect simple infinity", "[RobotSimulator]") {
 	auto inputParser = InputParser(detectSimpleInf);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
-	auto res = simulator.runProgram(inputParser.programs()[0]);
-
-	REQUIRE(std::holds_alternative<RobotSimulator::Inf>(res));
+	REQUIRE_THROWS_AS(simulator.runProgram(inputParser.programs()[0]), RobotSimulator::Inf);
 }
 
 // clang-format off
@@ -165,11 +156,8 @@ ub(l))"
 };
 //clang-format on
 
-TEST_CASE("Run simple procedure", "[RobotSimulator]")
-{
+TEST_CASE("Run simple procedure", "[RobotSimulator]") {
 	auto inputParser = InputParser(simpleProcedure);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
-	auto res = simulator.runProgram(inputParser.programs()[0]);
-
-	REQUIRE(std::holds_alternative<RobotSimulator::Inf>(res));
+	REQUIRE_THROWS_AS(simulator.runProgram(inputParser.programs()[0]), RobotSimulator::Inf);
 }
