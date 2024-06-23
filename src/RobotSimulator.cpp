@@ -132,12 +132,8 @@ void RobotSimulator::doNextStep(size_t stackIndex) {
 	if (islower(stackEntry.code[stackEntry.pos])) {
 		executeSimpleCommand(stackEntry);
 	}
-	else if (isupper(stackEntry.code[stackEntry.pos])) {
-		resolveProcedure(stackEntry);
-	}
 	else {
-		throw std::runtime_error("Invalid command");
-		return;
+		resolveProcedure(stackEntry);
 	}
 	addInfinityEntry(_stack[stackIndex]);
 }
