@@ -1,21 +1,31 @@
-# RoboSimulation
+# Robot Simulator
 
-RoboSimulation is a C++ library that allows you to run multiple programs provided by a
- std\::istream and writes their results to a provided std::ostream. It includes three
- build targets: SimulationRunnerLib, RobotSimulator, and tests.
+The Robot Simulator is a C++ application designed to simulate the movement of robots on a grid based on a series of programmed instructions. It reads input from a file, processes the instructions for each robot, and outputs their final positions on the grid.
 
-## Build Targets
+## Features
 
-### SimulationRunnerLib
+- Parse and execute a series of instructions for robots moving on a grid.
+- Detect infinite loops in robot instructions and report them.
+- Output the final position of the robot after executing its instructions.
 
-This build target creates a static library for other projects with the public header `SimulationRunner.h`.
+## Prerequisites
 
-### RobotSimulator
+- CMake (version 3.15 or higher)
+- A C++ compiler supporting C++17 (GCC, Clang, MSVC)
+- Catch2 (for testing)
 
-This build target creates an executable that takes a path to a file as an argument and runs the 
-RoboSimulation with it.
+## Building the Project
 
-### Tests
+To build the project, simply run the following command in the terminal:
 
-This build target runs the unit tests for the library.
+```sh
+make build
+```
 
+## Running the Simulator
+
+You can run the simulator with:
+
+```sh
+./RobotSimulator <filepath>
+```
