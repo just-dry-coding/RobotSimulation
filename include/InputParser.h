@@ -13,15 +13,15 @@ class InputParser {
 public:
 
 	struct MetaInfo {
-		unsigned long gridRows;
-		unsigned long gridCols;
-		unsigned long nProcedures;
-		unsigned long nPrograms;
+		unsigned gridRows;
+		unsigned gridCols;
+		unsigned nProcedures;
+		unsigned nPrograms;
 	};
 
 	using LinesIterator = std::vector<std::string>::const_iterator;
 
-	InputParser(std::istream& input);
+	explicit InputParser(std::istream& input);
 
 	static std::vector<std::string> getInputLines(std::istream& input);
 

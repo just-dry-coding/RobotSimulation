@@ -2,19 +2,22 @@
 
 #include "Robot.h"
 #include "InfDetector.h"
+#include <stack>
 
 
 class RobotSimulator {
-	struct StackEntry {
+	// StackFrame are like mini-call stacks that are executed in the simulator
+	// multiple commands from either the program or procedure
+	// the robot pose, when the stack frame was created
+	// the current position in the stack frame
+	struct StackFrame {
 		std::string code;
 		Pose2D initalPose;
-		unsigned pos = 0;
+		unsigned posInStackFrame = 0;
 	};
-
-	using Stack = std::vector<StackEntry>;
 	Robot _robot;
 	Procedures _procedures;
-	Stack _stack;
+	std::stack<StackFrame> _procedureStack;
 	InfDetector _infDetector;
 
 
@@ -26,12 +29,12 @@ public:
 private:
 	using StrIt = std::string::const_iterator;
 	Pose2D runStack();
-	void doNextStep(size_t stackIndex);
-	void executeSimpleCommand(StackEntry&);
-	void addStackEntry(std::string const& code);
-	void performBranch(StackEntry& stackEntry);
-	void performLoop(StackEntry& stackEntry);
-	void resolveProcedure(StackEntry& stackEntry);
+	void doNextStep();
+	void executeSimpleCommand(StackFrame&);
+	void addStackFrame(std::string const& code);
+	void performBranch(StackFrame& stackFrame);
+	void performLoop(StackFrame& stackFrame);
+	void resolveProcedure(StackFrame& stackFrame);
 	void popStack();
-	void addInfinityEntry(StackEntry const& code);
+	void addInfinityEntry(StackFrame const& code);
 };

@@ -51,42 +51,42 @@ StrIt findCorrespondingClosingBracket(StrIt it, StrIt endIt) {
 	}
 }
 
-void RobotSimulator::addStackEntry(std::string const& code) {
-	_stack.push_back({ code, _robot.currentPose(), 0 });
+void RobotSimulator::addStackFrame(std::string const& code) {
+	_procedureStack.push({ code, _robot.currentPose(), 0 });
 }
 
-void RobotSimulator::addInfinityEntry(StackEntry const& stackEntry) {
-	auto res = _infDetector.addEntry(stackEntry.code, stackEntry.pos, _robot.currentPose());
+void RobotSimulator::addInfinityEntry(StackFrame const& stackFrame) {
+	auto res = _infDetector.addEntry(stackFrame.code, stackFrame.posInStackFrame, _robot.currentPose());
 	if (res.has_value()) {
 		throw res.value();
 	}
 }
 
-void RobotSimulator::performBranch(StackEntry& stackEntry) {
-	auto it = std::cbegin(stackEntry.code) + stackEntry.pos;
-	auto endIt = std::cend(stackEntry.code);
+void RobotSimulator::performBranch(StackFrame& stackFrame) {
+	auto it = std::cbegin(stackFrame.code) + stackFrame.posInStackFrame;
+	auto endIt = std::cend(stackFrame.code);
 
 	auto openingIt = std::find(it, endIt, '(') + 1;
 	auto firstCondClose = findCorrespondingClosingBracket(openingIt, endIt);
 	auto secondCondClose = findCorrespondingClosingBracket(firstCondClose + 2, endIt);
 
-	stackEntry.pos += (secondCondClose + 1) - it;
+	stackFrame.posInStackFrame += (secondCondClose + 1) - it;
 
 	if (evalCondition(Condition(*(it + 1)), _robot)) {
 		if (firstCondClose == openingIt)
 			return; // nop for empty bracket
-		addStackEntry({ openingIt, firstCondClose });
+		addStackFrame({ openingIt, firstCondClose });
 	}
 	else {
 		if (firstCondClose == secondCondClose)
 			return; // nop for empty bracket
-		addStackEntry({ firstCondClose + 2, secondCondClose });
+		addStackFrame({ firstCondClose + 2, secondCondClose });
 	}
 }
 
-void RobotSimulator::performLoop(StackEntry& stackEntry) {
-	auto it = std::cbegin(stackEntry.code) + stackEntry.pos;
-	auto endIt = std::cend(stackEntry.code);
+void RobotSimulator::performLoop(StackFrame& stackFrame) {
+	auto it = std::cbegin(stackFrame.code) + stackFrame.posInStackFrame;
+	auto endIt = std::cend(stackFrame.code);
 
 	auto openingIt = std::find(it, endIt, '(') + 1;
 	auto closeIt = findCorrespondingClosingBracket(openingIt, endIt);
@@ -94,74 +94,74 @@ void RobotSimulator::performLoop(StackEntry& stackEntry) {
 	if (!evalCondition(Condition(*(it + 1)), _robot)) {
 		std::string outerLoop{ it, closeIt + 1 };
 		std::string innterLoop{ openingIt, closeIt };
-		addStackEntry(outerLoop);
-		addStackEntry(innterLoop);
+		addStackFrame(outerLoop);
+		addStackFrame(innterLoop);
 	}
 	else {
-		stackEntry.pos += (closeIt + 1) - it;
+		stackFrame.posInStackFrame += (closeIt + 1) - it;
 	}
 }
 
-void RobotSimulator::executeSimpleCommand(StackEntry& stackEntry) {
-	switch (SimpleCommands(stackEntry.code[stackEntry.pos])) {
+void RobotSimulator::executeSimpleCommand(StackFrame& stackFrame) {
+	switch (SimpleCommands(stackFrame.code[stackFrame.posInStackFrame])) {
 	case SimpleCommands::move:
 		_robot.moveForward();
-		++stackEntry.pos;
+		++stackFrame.posInStackFrame;
 		break;
 	case SimpleCommands::turnLeft:
 		_robot.turnLeft();
-		++stackEntry.pos;
+		++stackFrame.posInStackFrame;
 		break;
 	case SimpleCommands::branch:
-		performBranch(stackEntry);
+		performBranch(stackFrame);
 		break;
 	case SimpleCommands::loop:
-		performLoop(stackEntry);
+		performLoop(stackFrame);
 		break;
 	}
 }
 
-void RobotSimulator::resolveProcedure(StackEntry& stackEntry) {
-	++stackEntry.pos;
-	addStackEntry({ _procedures.at(stackEntry.code[stackEntry.pos - 1]) });
+void RobotSimulator::resolveProcedure(StackFrame& stackFrame) {
+	++stackFrame.posInStackFrame;
+	addStackFrame({ _procedures.at(stackFrame.code[stackFrame.posInStackFrame - 1]) });
 }
 
-void RobotSimulator::doNextStep(size_t stackIndex) {
-	auto& stackEntry = _stack[stackIndex];
-	if (islower(stackEntry.code[stackEntry.pos])) {
-		executeSimpleCommand(stackEntry);
+void RobotSimulator::doNextStep() {
+	auto& currentStackFrame = _procedureStack.top();
+	if (islower(currentStackFrame.code[currentStackFrame.posInStackFrame])) {
+		executeSimpleCommand(currentStackFrame);
 	}
 	else {
-		resolveProcedure(stackEntry);
+		resolveProcedure(currentStackFrame);
 	}
-	addInfinityEntry(_stack[stackIndex]);
+	addInfinityEntry(currentStackFrame);
 }
 
 void RobotSimulator::popStack() {
-	if (!_stack.size())
+	if (!_procedureStack.size())
 		return;
-	auto& currentStackFrame = _stack[_stack.size() - 1];
-	while (currentStackFrame.code.size() <= currentStackFrame.pos) {
+	auto& currentStackFrame = _procedureStack.top();
+	while (currentStackFrame.code.size() <= currentStackFrame.posInStackFrame) {
 		_infDetector.addStackFrameResult(
 			currentStackFrame.code, currentStackFrame.initalPose, _robot.currentPose());
 		_infDetector.addStackFrameResult(
 			currentStackFrame.code, _robot.currentPose(), _robot.currentPose());
-		_stack.pop_back();
-		if (!_stack.size()) {
+		_procedureStack.pop();
+		if (!_procedureStack.size()) {
 			break;
 		}
-		currentStackFrame = _stack[_stack.size() - 1];
+		currentStackFrame = _procedureStack.top();
 	}
 }
 
 Pose2D RobotSimulator::runStack() {
-	while (_stack.size() > 0) {
+	while (!_procedureStack.empty()) {
 		try {
-			doNextStep(_stack.size() - 1);
+			doNextStep();
 		}
 		catch (Pose2D const& pose) {
 			_robot.setPose(pose);
-			_stack.pop_back();
+			_procedureStack.pop();
 		}
 		popStack();
 	}
@@ -170,7 +170,8 @@ Pose2D RobotSimulator::runStack() {
 
 Pose2D RobotSimulator::runProgram(Program const& program) {
 	_robot.setPose(program.initPose);
-	_stack = Stack{ {program.code, program.initPose} };
+	_procedureStack = std::stack<StackFrame>{ };
+	_procedureStack.push({ program.code, program.initPose });
 	_infDetector = InfDetector{}; // todo: check if better to initialize simulator for every program
 
 	return runStack();

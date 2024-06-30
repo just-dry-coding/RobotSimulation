@@ -9,6 +9,7 @@ build:
 	cd build && cmake --build .
 
 test:
+	make build
 	cd build && ctest --output-on-failure
 
 clean:

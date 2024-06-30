@@ -4,12 +4,6 @@
 
 #include <sstream>
 
-// todo: add again
-//1 1 w
-//G
-//1 1 e
-//G
-
 using namespace Sim;
 // clang-format off
 auto exampleInput = std::stringstream{

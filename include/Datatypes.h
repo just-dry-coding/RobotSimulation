@@ -15,8 +15,8 @@ enum class Direction {
 };
 
 struct Pose2D {
-	unsigned long x;
-	unsigned long y;
+	unsigned x;
+	unsigned y;
 	Direction d;
 
 	inline bool operator==(Pose2D const rhs) const {
@@ -30,9 +30,9 @@ enum class GridCellState {
 };
 
 class Grid2D {
-	std::vector<GridCellState> _data;
 	unsigned _rows;
 	unsigned _cols;
+	std::vector<GridCellState> _data;
 
 public:
 	Grid2D() = default;

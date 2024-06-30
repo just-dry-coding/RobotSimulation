@@ -161,3 +161,39 @@ TEST_CASE("Run simple procedure", "[RobotSimulator]") {
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
 	REQUIRE_THROWS_AS(simulator.runProgram(inputParser.programs()[0]), Inf);
 }
+
+// clang-format off
+auto detectSimpleProcInf = std::stringstream{
+R"(3 3 1 1
+...
+...
+...
+G=G
+2 2 s
+G)"
+};
+//clang-format on
+
+TEST_CASE("Detect simple Procedure infinity", "[RobotSimulator]") {
+	auto inputParser = InputParser(detectSimpleProcInf);
+	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
+	REQUIRE_THROWS_AS(simulator.runProgram(inputParser.programs()[0]), Inf);
+}
+// clang-format off
+auto detectTwinProcInf = std::stringstream{
+R"(3 3 2 1
+...
+...
+...
+G=A
+A=G
+2 2 s
+G)"
+};
+//clang-format on
+
+TEST_CASE("Detect twin Procedure infinity", "[RobotSimulator]") {
+	auto inputParser = InputParser(detectTwinProcInf);
+	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
+	REQUIRE_THROWS_AS(simulator.runProgram(inputParser.programs()[0]), Inf);
+}
