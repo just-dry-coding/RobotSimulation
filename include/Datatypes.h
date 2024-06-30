@@ -4,6 +4,9 @@
 #include <string>
 #include <map>
 
+struct Inf {
+};
+
 enum class Direction {
 	n = 'n',
 	s = 's',

@@ -1,33 +1,32 @@
 #include "InfDetector.h"
 
-std::variant<Pose2D, InfDetector::Inf, InfDetector::None>
-InfDetector::addEntry(std::string const& code, unsigned pos, Pose2D const& pose) {
-	auto range = _stackStateSuccessMap.equal_range(code);
-	if (range.first == range.second) {
-		_stackStateSuccessMap.insert({ code, {pos, pose, std::nullopt} });
-		return { None{} };
+std::optional<Pose2D>
+InfDetector::addEntry(std::string const& code, unsigned stackPos, Pose2D const& pose) {
+	auto [start, end] = _simulationStateMap.equal_range(code);
+	if (start == end) {
+		_simulationStateMap.insert({ code, {stackPos, pose, std::nullopt} });
+		return std::nullopt;
 	}
 
-	for (auto it = range.first; it != range.second; ++it) {
-		auto const ele = *it;
-		if (pose == std::get<1>(ele.second) && pos == std::get<0>(ele.second)) {
-			auto const optionalResultPose = std::get<2>(ele.second);
-			if (std::nullopt == optionalResultPose) {
-				return { Inf{} };
+	for (auto it = start; it != end; ++it) {
+		auto const& [_, state] = *it;
+		if (pose == state.pose && stackPos == state.stackPos) {
+			if (state.resultPose.has_value()) {
+				return state.resultPose.value();
 			}
-			return { *optionalResultPose };
+			throw Inf{};
 		}
 	}
-	_stackStateSuccessMap.insert({ code, {pos, pose, std::nullopt} });
-	return { None{} };
+	_simulationStateMap.insert({ code, {stackPos, pose, std::nullopt} });
+	return std::nullopt;
 }
 
 void InfDetector::addStackFrameResult(std::string const& code, Pose2D const& initialPose, Pose2D const& resultPose) {
-	auto range = _stackStateSuccessMap.equal_range(code);
-	for (auto it = range.first; it != range.second; ++it) {
-		auto& ele = *it;
-		if (initialPose == std::get<1>(ele.second)) {
-			std::get<2>(ele.second) = resultPose;
+	auto [start, end] = _simulationStateMap.equal_range(code);
+	for (auto it = start; it != end; ++it) {
+		auto& [_, state] = *it;
+		if (initialPose == state.pose) {
+			state.resultPose = resultPose;
 		}
 	}
 }

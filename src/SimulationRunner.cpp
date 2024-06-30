@@ -11,7 +11,7 @@ void Sim::runSimulation(std::istream& input, std::ostream& os) {
 			auto pose = simulator.runProgram(program);
 			os << pose.x << ' ' << pose.y << ' ' << static_cast<char>(pose.d) << '\n';
 		}
-		catch (RobotSimulator::Inf const&) {
+		catch (Inf const&) {
 			os << "inf\n";
 		}
 	}

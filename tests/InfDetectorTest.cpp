@@ -7,11 +7,9 @@ TEST_CASE("Detect Simple Infinity", "[InfDetector]") {
 
 	auto res = infDetector.addEntry("I", 1u, Pose2D{ 1u, 1u, Direction::n });
 
-	REQUIRE(std::holds_alternative<InfDetector::None>(res));
+	REQUIRE(res.has_value() == false);
 
-	res = infDetector.addEntry("I", 1u, Pose2D{ 1u, 1u, Direction::n });
-
-	REQUIRE(std::holds_alternative<InfDetector::Inf>(res));
+	REQUIRE_THROWS_AS(infDetector.addEntry("I", 1u, Pose2D{ 1u, 1u, Direction::n }), Inf);
 }
 
 TEST_CASE("Return Cached Result", "[InfDetector]") {
@@ -19,11 +17,11 @@ TEST_CASE("Return Cached Result", "[InfDetector]") {
 
 	auto res = infDetector.addEntry("I", 1u, Pose2D{ 1u, 1u, Direction::n });
 
-	REQUIRE(std::holds_alternative<InfDetector::None>(res));
+	REQUIRE(res.has_value() == false);
 
 	infDetector.addStackFrameResult("I", Pose2D{ 1u, 1u, Direction::n }, Pose2D{ 2u, 2u, Direction::s });
 	res = infDetector.addEntry("I", 1u, Pose2D{ 1u, 1u, Direction::n });
 
-	REQUIRE(std::holds_alternative<Pose2D>(res));
-	REQUIRE(std::get<Pose2D>(res) == Pose2D{ 2u, 2u, Direction::s });
+	REQUIRE(res.has_value());
+	REQUIRE(res.value() == Pose2D{ 2u, 2u, Direction::s });
 }

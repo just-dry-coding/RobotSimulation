@@ -19,9 +19,6 @@ class RobotSimulator {
 
 
 public:
-	struct Inf {
-	};
-
 	RobotSimulator(Procedures const& procedures, Grid2D const& grid);
 
 	Pose2D runProgram(Program const& program);

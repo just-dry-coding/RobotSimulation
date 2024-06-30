@@ -141,7 +141,7 @@ ub(l))"
 TEST_CASE("Detect simple infinity", "[RobotSimulator]") {
 	auto inputParser = InputParser(detectSimpleInf);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
-	REQUIRE_THROWS_AS(simulator.runProgram(inputParser.programs()[0]), RobotSimulator::Inf);
+	REQUIRE_THROWS_AS(simulator.runProgram(inputParser.programs()[0]), Inf);
 }
 
 // clang-format off
@@ -159,5 +159,5 @@ ub(l))"
 TEST_CASE("Run simple procedure", "[RobotSimulator]") {
 	auto inputParser = InputParser(simpleProcedure);
 	auto simulator = RobotSimulator(inputParser.procedures(), inputParser.grid());
-	REQUIRE_THROWS_AS(simulator.runProgram(inputParser.programs()[0]), RobotSimulator::Inf);
+	REQUIRE_THROWS_AS(simulator.runProgram(inputParser.programs()[0]), Inf);
 }

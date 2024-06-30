@@ -1,7 +1,7 @@
 .PHONY: all checkout setup build test
 
 run:
-    cd build && ./RobotSimulator
+	cd build && ./RobotSimulator
 
 build:
 	mkdir -p build
@@ -9,7 +9,7 @@ build:
 	cd build && cmake --build .
 
 test:
-	cd build && ctest
+	cd build && ctest --output-on-failure
 
 clean:
 	rm -rf build

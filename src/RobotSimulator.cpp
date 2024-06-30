@@ -57,10 +57,9 @@ void RobotSimulator::addStackEntry(std::string const& code) {
 
 void RobotSimulator::addInfinityEntry(StackEntry const& stackEntry) {
 	auto res = _infDetector.addEntry(stackEntry.code, stackEntry.pos, _robot.currentPose());
-	if (std::holds_alternative<InfDetector::Inf>(res))
-		throw Inf{};
-	if (std::holds_alternative<Pose2D>(res))
-		throw std::get<Pose2D>(res);
+	if (res.has_value()) {
+		throw res.value();
+	}
 }
 
 void RobotSimulator::performBranch(StackEntry& stackEntry) {
