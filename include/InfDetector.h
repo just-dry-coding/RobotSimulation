@@ -9,6 +9,7 @@
 // It works by keeping track of each procedure that was executed in the simulator.
 // If the same procedure ends up in the exact same state (posInStackFrame and pose),
 // without having a resultPose, it means that the procedure is stuck in an infinite loop.
+// For procedures that are stuck in an infinite loop, the Inf exception is thrown.
 class InfDetector {
 	struct SimulationState {
 		unsigned posInStackFrame;
